@@ -1,6 +1,9 @@
 var arrTodoItem = [];
 
 function storeData(data){
+	if(data.length<1){
+		return;
+	}
 	var actionItem = {action: data, isDone: false};
 	arrTodoItem.push(actionItem);
 	localStorage.setItem("todoItem", JSON.stringify(arrTodoItem));
@@ -16,7 +19,8 @@ function updateData(){
 
 function fillExistingActions(){
 	var getTodo = retrieveData("todoItem");
-	if(!getTodo){
+	if(!getTodo || getTodo.length<1){
+		$("#listView").removeClass("listStyle");
 		$("#listView").addClass("displayNone");
 		return;
 	}
@@ -41,7 +45,17 @@ function fillExistingActions(){
 
 function updateList(){
 	var getTodo = retrieveData("todoItem");
+	if(!getTodo || getTodo.length<1){
+		$("#listView").removeClass("listStyle");
+		$("#listView").addClass("displayNone");
+		return;
+	}
 	if(getTodo.length>0){
+		var currentClass = $("#listView").attr('class');
+		if(currentClass == "displayNone"){
+			$("#listView").removeClass("displayNone");
+			$("#listView").addClass("listStyle");
+		}
 		//Already saved Items, iterate
 		$("#listView").empty();
 		for(var i = 0; i<getTodo.length; i++){
@@ -82,7 +96,11 @@ $(document).ready(function(){
 		var code = event.keyCode;
 		if(code == 13){ //Enter key code
 			event.preventDefault();
-			storeData($("#inputTxt").val());
+			var text = $("#inputTxt").val();
+			if(text.length<1){
+				return;
+			}
+			storeData(text);
 			updateList();
 			$("#inputTxt").val("");
 		}
@@ -90,7 +108,11 @@ $(document).ready(function(){
 	});
 
 	$("#btnAdd").click(function(event){
-		storeData($("#inputTxt").val());
+		var text = $("#inputTxt").val();
+		if(text.length<1){
+			return;
+		}
+		storeData(text);
 		updateList();
 		$("#inputTxt").val("");
 	});
